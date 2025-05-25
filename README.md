@@ -35,7 +35,7 @@ A beautiful, responsive, and fully functional calculator built using **HTML**, *
 
 ## 🚀 Live Demo
 
-[🔗 Live Demo on GitHub Pages](https://yourusername.github.io/calculator-project)  
+[🔗 Live Demo on GitHub Pages](https://github.com/AbhipsaThakur/calculator)  
 > Replace the URL with your own GitHub Pages deployment link.
 
 ---
