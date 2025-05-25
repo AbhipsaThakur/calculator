@@ -1,40 +1,72 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Full Calculator</title>
+  <meta charset="UTF-8" />
+  <title>Enhanced Phone-Style Calculator</title>
   <style>
+    :root {
+      --bg-light: #eef2f3;
+      --bg-dark: #1e1e1e;
+      --calc-bg-light: rgba(255, 255, 255, 0.9);
+      --calc-bg-dark: rgba(0, 0, 0, 0.8);
+      --text-light: #000;
+      --text-dark: #fff;
+      --btn-light: #ffffffcc;
+      --btn-dark: #333333cc;
+      --btn-hover-light: #ddd;
+      --btn-hover-dark: #555;
+      --accent-light: #3498db;
+      --accent-dark: #2980b9;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #8e9eab, #eef2f3);
-      height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       margin: 0;
+      height: 100vh;
       display: flex;
+      flex-direction: column;
       align-items: center;
       justify-content: center;
+      background: var(--bg-light);
+      color: var(--text-light);
+      transition: background 0.3s, color 0.3s;
+    }
+    body.dark {
+      background: var(--bg-dark);
+      color: var(--text-dark);
     }
 
     .calculator {
-      background: rgba(0, 0, 0, 0.7);
-      border-radius: 15px;
-      padding: 20px;
-      width: 350px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.4);
-      color: white;
+  background: linear-gradient(135deg, rgba(132, 165, 175, 0.85), rgba(152, 152, 197, 0.75));
+  backdrop-filter: blur(12px);
+  border-radius: 20px;
+  padding: 25px;
+  width: 350px;
+  box-shadow:
+    0 8px 24px rgba(52, 152, 219, 0.2),
+    inset 0 0 30px rgba(255, 255, 255, 0.5);
+  color: var(--text-light);
+  transition: background 0.3s, color 0.3s;
+}
+    body.dark .calculator {
+      background: var(--calc-bg-dark);
+      color: var(--text-dark);
+      box-shadow: 0 0 20px #000;
     }
 
     #display {
-  width: 100%;
-  height: 50px;
-  font-size: 24px;
-  text-align: right;
-  padding: 10px;
-  border-radius: 10px;
-  border: none;
-  box-sizing: border-box;
-  margin: 0;
-}
-
+      width: 100%;
+      height: 50px;
+      font-size: 24px;
+      text-align: right;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 10px;
+      border: none;
+      box-sizing: border-box;
+      background: transparent;
+      color: inherit;
+    }
 
     .buttons {
       display: grid;
@@ -48,81 +80,157 @@
       font-size: 18px;
       border: none;
       border-radius: 10px;
-      background-color: #ffffffcc;
-      color: black;
+      background-color: var(--btn-light);
+      color: var(--text-light);
       cursor: pointer;
-      transition: background 0.3s;
+      transition: background 0.3s, color 0.3s;
+      user-select: none;
     }
-
+    body.dark button {
+      background-color: var(--btn-dark);
+      color: var(--text-dark);
+    }
     button:hover {
-      background-color: #ddd;
+      background-color: var(--btn-hover-light);
+    }
+    body.dark button:hover {
+      background-color: var(--btn-hover-dark);
     }
 
     .equal {
       grid-column: span 4;
-      background-color: #3498db;
+      background-color: var(--accent-light);
       color: white;
     }
-
+    body.dark .equal {
+      background-color: var(--accent-dark);
+    }
     .equal:hover {
       background-color: #2980b9;
+    }
+
+    /* History panel */
+    .history-container {
+      width: 350px;
+      max-height: 150px;
+      margin-top: 20px;
+      background: var(--calc-bg-light);
+      border-radius: 12px;
+      padding: 10px;
+      overflow-y: auto;
+      color: var(--text-light);
+      box-shadow: inset 0 0 10px rgba(0,0,0,0.1);
+      transition: background 0.3s, color 0.3s;
+      font-family: monospace;
+      font-size: 14px;
+    }
+    body.dark .history-container {
+      background: var(--calc-bg-dark);
+      color: var(--text-dark);
+      box-shadow: inset 0 0 10px rgba(255,255,255,0.1);
+    }
+    .history-item {
+      padding: 3px 5px;
+      border-bottom: 1px solid rgba(0,0,0,0.1);
+    }
+    body.dark .history-item {
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Toggle theme button */
+    .toggle-theme {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 8px 16px;
+  background-color: var(--accent-light);
+  border: none;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 14px;
+  user-select: none;
+  transition: background-color 0.3s;
+  width: 130px;
+  text-align: center;
+  margin: 0; /* remove auto margin */
+  z-index: 1000; /* on top */
+}
+    .toggle-theme:hover {
+      background-color: var(--accent-dark);
     }
   </style>
 </head>
 <body>
 
-  <div class="calculator">
-    <input type="text" id="display" placeholder="0" disabled />
+  <button class="toggle-theme" id="toggleThemeBtn">Switch to Dark Mode</button>
 
-    <div class="buttons">
-      <button onclick="clearDisplay()">C</button>
-      <button onclick="deleteLast()">⌫</button>
-      <button onclick="append('%')">%</button>
-      <button onclick="append('/')">÷</button>
+  <div class="calculator" role="application" aria-label="Calculator">
+    <input type="text" id="display" placeholder="0" aria-live="polite" disabled />
 
-      <button onclick="append('7')">7</button>
-      <button onclick="append('8')">8</button>
-      <button onclick="append('9')">9</button>
-      <button onclick="append('*')">×</button>
+    <div class="buttons" role="group" aria-label="Calculator buttons">
+      <button onclick="clearDisplay()" aria-label="Clear">C</button>
+      <button onclick="deleteLast()" aria-label="Backspace">⌫</button>
+      <button onclick="append('%')" aria-label="Percentage">%</button>
+      <button onclick="append('/')" aria-label="Divide">÷</button>
 
-      <button onclick="append('4')">4</button>
-      <button onclick="append('5')">5</button>
-      <button onclick="append('6')">6</button>
-      <button onclick="append('-')">−</button>
+      <button onclick="append('7')" aria-label="7">7</button>
+      <button onclick="append('8')" aria-label="8">8</button>
+      <button onclick="append('9')" aria-label="9">9</button>
+      <button onclick="append('*')" aria-label="Multiply">×</button>
 
-      <button onclick="append('1')">1</button>
-      <button onclick="append('2')">2</button>
-      <button onclick="append('3')">3</button>
-      <button onclick="append('+')">+</button>
+      <button onclick="append('4')" aria-label="4">4</button>
+      <button onclick="append('5')" aria-label="5">5</button>
+      <button onclick="append('6')" aria-label="6">6</button>
+      <button onclick="append('-')" aria-label="Subtract">−</button>
 
-      <button onclick="append('0')">0</button>
-      <button onclick="append('.')">.</button>
-      <button onclick="toggleSign()">+/-</button>
-      <button onclick="append('**')">^</button>
+      <button onclick="append('1')" aria-label="1">1</button>
+      <button onclick="append('2')" aria-label="2">2</button>
+      <button onclick="append('3')" aria-label="3">3</button>
+      <button onclick="append('+')" aria-label="Add">+</button>
 
-      <button onclick="append('(')">(</button>
-      <button onclick="append(')')">)</button>
-      <button onclick="append('Math.sqrt(')">√</button>
-      <button class="equal" onclick="calculate()">=</button>
+      <button onclick="append('0')" aria-label="0">0</button>
+      <button onclick="append('.')" aria-label="Decimal point">.</button>
+      <button onclick="toggleSign()" aria-label="Toggle Sign">+/-</button>
+      <button onclick="append('**')" aria-label="Exponent">^</button>
+
+      <button onclick="append('(')" aria-label="Open parenthesis">(</button>
+      <button onclick="append(')')" aria-label="Close parenthesis">)</button>
+      <button onclick="append('Math.sqrt(')" aria-label="Square root">√</button>
+      <button class="equal" onclick="calculate()" aria-label="Equals">=</button>
     </div>
   </div>
 
+  <div class="history-container" aria-live="polite" aria-label="Calculation History" id="history">
+    <strong>History:</strong>
+    <div id="historyItems"></div>
+  </div>
+
   <script>
+    const display = document.getElementById('display');
+    const historyItems = document.getElementById('historyItems');
+    const toggleThemeBtn = document.getElementById('toggleThemeBtn');
+
+    let history = [];
+
     function append(value) {
-      document.getElementById("display").value += value;
+      // Avoid multiple consecutive operators except ** and Math.sqrt(
+      if (value === '**') {
+        if (display.value.endsWith('**')) return;
+      }
+      display.value += value;
     }
 
     function clearDisplay() {
-      document.getElementById("display").value = "";
+      display.value = '';
     }
 
     function deleteLast() {
-      let current = document.getElementById("display").value;
-      document.getElementById("display").value = current.slice(0, -1);
+      display.value = display.value.slice(0, -1);
     }
 
     function toggleSign() {
-      let display = document.getElementById("display");
+      if (!display.value) return;
       if (display.value.startsWith('-')) {
         display.value = display.value.slice(1);
       } else {
@@ -132,12 +240,62 @@
 
     function calculate() {
       try {
-        let result = eval(document.getElementById("display").value);
-        document.getElementById("display").value = result;
-      } catch (e) {
-        document.getElementById("display").value = "Error";
+        // Evaluate the expression safely
+        // Replace ^ with ** for power
+        let expr = display.value.replace(/\^/g, '**');
+        // Evaluate using eval (basic, be cautious)
+        let result = eval(expr);
+        if (result === undefined) throw 'Error';
+        addToHistory(display.value + ' = ' + result);
+        display.value = result;
+      } catch {
+        display.value = 'Error';
       }
     }
+
+    function addToHistory(entry) {
+      history.unshift(entry);
+      if (history.length > 10) history.pop();
+      renderHistory();
+    }
+
+    function renderHistory() {
+      historyItems.innerHTML = '';
+      for (const item of history) {
+        const div = document.createElement('div');
+        div.textContent = item;
+        div.className = 'history-item';
+        historyItems.appendChild(div);
+      }
+    }
+
+    // Keyboard support
+    window.addEventListener('keydown', (e) => {
+      const allowedKeys = '0123456789+-*/().%^';
+      if (allowedKeys.includes(e.key)) {
+        e.preventDefault();
+        append(e.key);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        calculate();
+      } else if (e.key === 'Backspace') {
+        e.preventDefault();
+        deleteLast();
+      } else if (e.key === 'Escape') {
+        e.preventDefault();
+        clearDisplay();
+      }
+    });
+
+    // Dark/Light theme toggle
+    toggleThemeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      if (document.body.classList.contains('dark')) {
+        toggleThemeBtn.textContent = 'Switch to Light Mode';
+      } else {
+        toggleThemeBtn.textContent = 'Switch to Dark Mode';
+      }
+    });
   </script>
 </body>
 </html>
